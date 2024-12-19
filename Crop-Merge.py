@@ -111,12 +111,15 @@ def main():
 
     elif mode == "merge":
         input_folder = input("Enter the folder containing cropped images: ").strip()
-        output_path = os.path.join(os.getcwd(), "merged_image.tif")
+        output_folder = input("Enter the folder to save the merged image: ").strip()
 
         # Validate input
         if not os.path.exists(input_folder):
             print("Error: The specified folder does not exist.")
             return
+
+        # Generate output path
+        output_path = os.path.join(output_folder, "merged_image.tif")
 
         # Merge the images
         print("Merging cropped images...")
