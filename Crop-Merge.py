@@ -17,8 +17,8 @@ def crop_image(image_path, save_folder, crop_width=1500, crop_height=820):
         y_chunks = img.height // crop_height
         
         # Create the save folder if it doesn't exist
-        if not os.path.exists(save_folder):
-            os.makedirs(save_folder)
+        if not os.path.isdir(save_folder):
+            os.makedirs(save_folder, exist_ok=True)
         
         # Iterate over each chunk
         for i in range(x_chunks):
@@ -33,7 +33,7 @@ def crop_image(image_path, save_folder, crop_width=1500, crop_height=820):
                 
                 # Save the chunk
                 base_image_name = os.path.splitext(os.path.basename(image_path))[0]
-                cropped_image_path = os.path.join(save_folder, f"{base_image_name}_{i}_{j}.tif")
+                cropped_image_path = os.path.join(save_folder, base_image_name + f"_{i}_{j}.tif")
                 img_chunk.save(cropped_image_path)
                 print(f"Saved: {cropped_image_path}")
 
@@ -84,12 +84,21 @@ def merge_images(input_folder, output_path):
         merged_image.paste(img, (x_offset, y_offset))
 
     # Save the final merged image
-    merged_image.save(output_path)
-    print(f"Merged orthophoto saved to: {output_path}")
+    try:
+        merged_image.save(output_path)
+        print(f"Merged orthophoto saved to: {output_path}")
+    except Exception as e:
+        print(f"Error saving merged orthophoto: {e}")
 
 # Main logic for the app
 def main():
-    print("Welcome to the Orthophoto Processor!")
+    print("""
+Welcome to the Orthophoto Processor!
+Options:
+  crop  - Crop the orthophoto into smaller chunks
+  merge - Merge cropped images into a single orthophoto
+""")
+
     mode = input("Enter mode (crop/merge): ").strip().lower()
 
     if mode == "crop":
@@ -97,12 +106,13 @@ def main():
         save_folder = input("Enter the folder to save the cropped images: ").strip()
 
         # Validate inputs
-        if not os.path.exists(image_path):
+        if not os.path.isfile(image_path):
             print("Error: The specified image file does not exist.")
             return
-        if not os.path.isfile(image_path):
-            print("Error: The specified path is not a valid file.")
-            return
+
+        # Create the save folder if it doesn't exist
+        if not os.path.isdir(save_folder):
+            os.makedirs(save_folder, exist_ok=True)
 
         # Crop the image
         print("Cropping the orthophoto...")
@@ -114,9 +124,13 @@ def main():
         output_folder = input("Enter the folder to save the merged image: ").strip()
 
         # Validate input
-        if not os.path.exists(input_folder):
+        if not os.path.isdir(input_folder):
             print("Error: The specified folder does not exist.")
             return
+
+        # Create the output folder if it doesn't exist
+        if not os.path.isdir(output_folder):
+            os.makedirs(output_folder, exist_ok=True)
 
         # Generate output path
         output_path = os.path.join(output_folder, "merged_image.tif")
