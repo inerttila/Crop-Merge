@@ -19,5 +19,5 @@ You can either install your own environment or use this one.
 
 Make sure to have the following Python version. You can check it in the file 
 ```bash
-Crop-Merge\env\pyvenv.cfg
+"Crop-Merge\env\pyvenv.cfg"
  ```
