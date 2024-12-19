@@ -1,1 +1,5 @@
 *.tif
+# Ignore Python bytecode files
+*.pyc
+*.pyo
+__pycache__/
